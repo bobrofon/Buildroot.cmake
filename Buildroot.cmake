@@ -561,6 +561,7 @@ function(_buildroot_make buildroot_target cmake_target_name source_dir build_dir
     add_custom_command(
         OUTPUT ${output}
         COMMAND
+            env -u PERL_MM_OPT
             ${BUILDROOT_MAKE_WRAPPER} ${build_dir} ${buildroot_target} ${build_log}
 
         ${stamp_command}
