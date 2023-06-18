@@ -59,12 +59,17 @@ unset MAKEFLAGS
 
 # Buildroot's manual says the following about parallel Make:
 #
-#    You should never use make -jN with Buildroot: top-level parallel make is
-#    currently not supported. Instead, use the BR2_JLEVEL option to tell
-#    Buildroot to run the compilation of each individual package with make -jN.
+#    Until 2020.02, Buildroot was however building packages in a serial fashion:
+#    each package was built one after the other, without parallelization of
+#    the build between packages. As of 2020.02, Buildroot has experimental support
+#    for top-level parallel build, which allows some significant build time savings
+#    by building packages that have no dependency relationship in parallel.
+#    This feature is however marked as experimental and is known not to work in some cases.
 #
-# So, let's be sure "-j 1" is used for the toplevel Buildroot `make` process.
+# So, let's be sure "-j $(nproc)" is used for the toplevel Buildroot `make` process.
+# If 'BR2_PER_PACKAGE_DIRECTORIES' is not enabled, the option will be simply ignored by Buildroot.
+# If 'BR2_PER_PACKAGE_DIRECTORIES' is enabled, it may significantly reduce total build time.
 #
-export MAKEFLAGS="-j 1"
+export MAKEFLAGS="-j $(nproc)"
 
 make < /dev/null O=${build_dir} ${buildroot_target} | tee --append ${log}
